@@ -24,5 +24,12 @@
   "bugs": {
     "url": "https://github.com/hakatashi/IVS.js/issues"
   },
-  "homepage": "https://github.com/hakatashi/IVS.js"
+  "homepage": "https://github.com/hakatashi/IVS.js",
+  "devDependencies": {
+    "async": "^0.9.0",
+    "mocha": "^1.21.4",
+    "request": "^2.42.0",
+    "should": "^4.0.4",
+    "tar": "^1.0.1"
+  }
 }
