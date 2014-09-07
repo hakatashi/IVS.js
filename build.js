@@ -47,7 +47,7 @@ var base64 = function (n) {
 	var charset = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@_'
 
 	while (n !== 0) {
-		ret = ret + charset[n % 64];
+		ret = charset[n % 64] + ret;
 		n = Math.floor(n / 64);
 	}
 
@@ -306,7 +306,7 @@ async.parallel([
 		var firstCodePoint = toCodePoint(firstCode).toString(16).toLowerCase();
 
 		for (var secondCode in IVD[firstCode]) if (IVD[firstCode].hasOwnProperty(secondCode)) {
-			var secondCodePoint = toCodePoint(firstCode).toString(16).toLowerCase();
+			var secondCodePoint = toCodePoint(secondCode).toString(16).toLowerCase();
 			var glyphName = 'u' + firstCodePoint + '-u' + secondCodePoint;
 			var resolved = resolveAlias(glyphName);
 			IVD[firstCode][secondCode].push(resolved);
