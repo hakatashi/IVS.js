@@ -33,12 +33,12 @@ var resolveAlias = function (charCode) {
 	return charCode;
 };
 
-var recordInGroup = function (alias, charCode) {
+var recordInGroup = function (alias, string) {
 	if (aliasGroup[alias] === undefined) {
 		aliasGroup[alias] = [];
 	}
 
-	aliasGroup[alias].push(charCode);
+	aliasGroup[alias].push(string);
 };
 
 // pseudo-base64
@@ -53,6 +53,67 @@ var base64 = function (n) {
 
 	return ret;
 }
+
+// ES6 String.fromCodePoint polyfilling
+/*! http://mths.be/fromcodepoint v0.1.0 by @mathias */
+var fromCodePoint = function (codePoints) {
+	var MAX_SIZE = 0x4000;
+	var codeUnits = [];
+	var highSurrogate;
+	var lowSurrogate;
+	var index = -1;
+	var length = arguments.length;
+	if (!length) {
+		return '';
+	}
+	var result = '';
+	while (++index < length) {
+		var codePoint = Number(arguments[index]);
+		if (
+			!isFinite(codePoint) || // `NaN`, `+Infinity`, or `-Infinity`
+			codePoint < 0 || // not a valid Unicode code point
+			codePoint > 0x10FFFF || // not a valid Unicode code point
+			Math.floor(codePoint) != codePoint // not an integer
+		) {
+			throw RangeError('Invalid code point: ' + codePoint);
+		}
+		if (codePoint <= 0xFFFF) { // BMP code point
+			codeUnits.push(codePoint);
+		} else { // Astral code point; split in surrogate halves
+			// http://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
+			codePoint -= 0x10000;
+			highSurrogate = (codePoint >> 10) + 0xD800;
+			lowSurrogate = (codePoint % 0x400) + 0xDC00;
+			codeUnits.push(highSurrogate, lowSurrogate);
+		}
+		if (index + 1 == length || codeUnits.length > MAX_SIZE) {
+			result += String.fromCharCode.apply(null, codeUnits);
+			codeUnits.length = 0;
+		}
+	}
+	return result;
+};
+
+// ES6 String.prototype.codePointAt pseudo-polyfilling
+/*! http://mths.be/codepointat v0.1.0 by @mathias */
+var toCodePoint = function (string) {
+	var size = string.length;
+	var index = 0;
+	// Get the first code unit
+	var first = string.charCodeAt(index);
+	var second;
+	if ( // check if it’s the start of a surrogate pair
+		first >= 0xD800 && first <= 0xDBFF && // high surrogate
+		size > index + 1 // there is a next code unit
+	) {
+		second = string.charCodeAt(index + 1);
+		if (second >= 0xDC00 && second <= 0xDFFF) { // low surrogate
+			// http://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
+			return (first - 0xD800) * 0x400 + second - 0xDC00 + 0x10000;
+		}
+	}
+	return first;
+};
 
 // fetch sources
 async.parallel([
@@ -211,6 +272,9 @@ async.parallel([
 					}
 
 					var codePoints = columns[0].split(' ');
+					codePoints = codePoints.map(function (codePoint) {
+						return fromCodePoint(parseInt(codePoint, 16));
+					});
 
 					if (IVD[codePoints[0]] === undefined) {
 						IVD[codePoints[0]] = {};
@@ -239,16 +303,19 @@ async.parallel([
 	// resolve aliases in IVD
 
 	for (var firstCode in IVD) if (IVD.hasOwnProperty(firstCode)) {
+		var firstCodePoint = toCodePoint(firstCode).toString(16).toLowerCase();
+
 		for (var secondCode in IVD[firstCode]) if (IVD[firstCode].hasOwnProperty(secondCode)) {
-			var glyphName = 'u' + firstCode.toLowerCase() + '-u' + secondCode.toLowerCase();
+			var secondCodePoint = toCodePoint(firstCode).toString(16).toLowerCase();
+			var glyphName = 'u' + firstCodePoint + '-u' + secondCodePoint;
 			var resolved = resolveAlias(glyphName);
 			IVD[firstCode][secondCode].push(resolved);
-			recordInGroup(resolved, glyphName);
+			recordInGroup(resolved, firstCode + secondCode);
 		}
 
-		var standardGlyph = 'u' + firstCode.toLowerCase();
+		var standardGlyph = 'u' + firstCodePoint;
 		IVD[firstCode].std = resolveAlias(standardGlyph);
-		recordInGroup(IVD[firstCode].std, standardGlyph);
+		recordInGroup(IVD[firstCode].std, firstCode);
 	}
 
 	// minify aliases
