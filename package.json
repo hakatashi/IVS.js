@@ -1,0 +1,28 @@
+{
+  "name": "IVS.js",
+  "version": "0.0.1",
+  "description": "This module supplies mutual IVS conversion between Adobe-Japan and Hanyo-denshi(Moji_Joho)",
+  "main": "build.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hakatashi/IVS.js.git"
+  },
+  "keywords": [
+    "Unicode",
+    "IVS",
+    "IVD",
+    "text",
+    "conversion",
+    "kanji",
+    "Japanese"
+  ],
+  "author": "hakatashi <hakatasiloving@gmail.com> (http://hakatashi.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hakatashi/IVS.js/issues"
+  },
+  "homepage": "https://github.com/hakatashi/IVS.js"
+}
