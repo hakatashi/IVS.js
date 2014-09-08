@@ -118,4 +118,15 @@ IVS.AJ = IVS.unify.bind(undefined, 'AJ');
  */
 IVS.HD = IVS.unify.bind(undefined, 'HD');
 
+/**
+ * Completely strip IVSes from given string.
+ * @param  {string} string
+ * @return {string} IVS-stripped string
+ */
+IVS.strip = function (string) {
+	return IVS.forEachKanji(string, function (kanji, ivs, index) {
+		return kanji;
+	});
+};
+
 module.exports = IVS;
