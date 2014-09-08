@@ -371,5 +371,6 @@ async.parallel([
 		}
 
 		console.log('Compiled file created.');
+		process.exit(0);
 	});
 });
