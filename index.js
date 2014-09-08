@@ -6,6 +6,20 @@ var KANJI_SURROGATE_REGEX = new RegExp('[\uD840-\uD86E][\uDC00-\uDFFF]');
 
 var IVS = {};
 
+var parseKanji = function (string) {
+	if (string.length <= 2) {
+		return {
+			kanji: string,
+			ivs: ''
+		};
+	} else {
+		return {
+			kanji: string.slice(0, -2),
+			ivs: string.slice(-2)
+		};
+	}
+}
+
 /**
  * Execute function for each Kanji and IVS (if exists) in given string
  * @param {string} string - The string in which this function seeks for Kanji
@@ -56,12 +70,52 @@ IVS.forEachKanji = function (string, callback) {
 
 /**
  * Unify IVSes in the given string to the given type
- * @param  {string} string
  * @param  {string} category - The IVS category to which the IVSes will be unified to. `'Aj'` and `'HD'` are supported.
+ * @param  {string} string
  * @return {string} IVS-Unified string
  */
-IVS.unify = function (string, category) {
-	
+IVS.unify = function (category, string) {
+	return IVS.forEachKanji(string, function (kanji, ivs, index) {
+		if (!ivs) return kanji;
+		if (!IVD.IVD[kanji]) return kanji + ivs;
+		if (!IVD.IVD[kanji][ivs]) return kanji + ivs;
+
+		var info = IVD.IVD[kanji][ivs];
+
+		if (info[0] === category) return kanji + ivs;
+
+		var aliasName = info[1];
+
+		if (aliasName === '') return kanji + ivs;
+
+		var unified = null;
+		IVD.aliases[aliasName].forEach(function (alias) {
+			var parsed = parseKanji(alias);
+			if (parsed.kanji === kanji && parsed.ivs) {
+				if (IVD.IVD[parsed.kanji][parsed.ivs][0] === category) {
+					unified = alias;
+				}
+			}
+		});
+
+		if (unified) {
+			return unified;
+		} else {
+			return kanji + ivs;
+		}
+	});
 };
+
+/**
+ * Unify IVSes in given string to Adobe-Japan1.
+ * @param {string} string
+ */
+IVS.AJ = IVS.unify.bind(undefined, 'AJ');
+
+/**
+ * Unify IVSes in given string to Hanyo-Denshi.
+ * @param {string} string
+ */
+IVS.HD = IVS.unify.bind(undefined, 'HD');
 
 module.exports = IVS;
