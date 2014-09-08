@@ -71,3 +71,6 @@ $RECYCLE.BIN/
 # sources and data
 sources
 data
+
+# JSDoc generated files
+out
