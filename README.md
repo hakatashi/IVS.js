@@ -31,6 +31,14 @@ Unify IVSes in given string to Adobe-Japan1. Same as IVS.unify('AJ', string).
 
 Unify IVSes in given string to Hanyo-Denshi. Same as IVS.unify('HD', string).
 
+### IVS.strip(string)
+
+Completely strip IVSes from given string.
+
+**string**: string
+
+**Returns**: string, IVS-stripped string
+
 ### IVS.forEachKanji(string, callback)
 
 Execute function for each Kanji and IVS (if exists) in given string

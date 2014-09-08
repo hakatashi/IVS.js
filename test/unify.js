@@ -24,7 +24,7 @@ describe('IVS.unify()', function () {
 		});
 	});
 
-	data.AJincompatible.forEach(function (datum) {
+	data.HDincompatible.forEach(function (datum) {
 		it('should leave HD-incompatible kanjies untouched when unifying AJ IVSes into HD IVSes', function () {
 			IVS.HD(datum.AJ).should.equal(datum.HD);
 		});
