@@ -17,7 +17,7 @@ Node.js module that supplies mutual IVS conversion between Adobe-Japan and Hanyo
 
 Unify IVSes in the given string to the given type
 
-**category**: string, The IVS category to which the IVSes will be unified to. `'Aj'` and `'HD'` are supported.
+**category**: string, The IVS category to which the IVSes will be unified to. `'AJ'` and `'HD'` are supported.
 
 **string**: string, Unify IVSes in the given string to the given type
 
