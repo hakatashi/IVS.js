@@ -23,7 +23,7 @@ var parseKanji = function (string) {
 /**
  * Execute function for each Kanji and IVS (if exists) in given string
  * @param {string} string - The string in which this function seeks for Kanji
- * @param {IVSCallback} callback - The function called every time when Kanji was found
+ * @param {KanjiCallback} callback - The function called every time when Kanji was found
  */
 IVS.forEachKanji = function (string, callback) {
 	var size = string.length;
@@ -107,13 +107,13 @@ IVS.unify = function (category, string) {
 };
 
 /**
- * Unify IVSes in given string to Adobe-Japan1.
+ * Unify IVSes in given string to Adobe-Japan1. Same as IVS.unify('AJ', string).
  * @param {string} string
  */
 IVS.AJ = IVS.unify.bind(undefined, 'AJ');
 
 /**
- * Unify IVSes in given string to Hanyo-Denshi.
+ * Unify IVSes in given string to Hanyo-Denshi. Same as IVS.unify('HD', string).
  * @param {string} string
  */
 IVS.HD = IVS.unify.bind(undefined, 'HD');
