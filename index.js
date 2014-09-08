@@ -124,9 +124,7 @@ IVS.HD = IVS.unify.bind(undefined, 'HD');
  * @return {string} IVS-stripped string
  */
 IVS.strip = function (string) {
-	return IVS.forEachKanji(string, function (kanji, ivs, index) {
-		return kanji;
-	});
+	return string.replace(new RegExp('\uDB40[\uDD00-\uDDEF]', 'g'), '');
 };
 
 module.exports = IVS;
