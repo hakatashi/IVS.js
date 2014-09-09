@@ -32,7 +32,7 @@ Unify IVSes in the given string to the given type
 
 **category**: string, The IVS category to which the IVSes will be unified to. `'Aj'` and `'HD'` are supported.
 
-**string**: string, Unify IVSes in the given string to the given type
+**string**: string
 
 **Returns**: string, IVS-Unified string
 
@@ -42,7 +42,7 @@ Unify IVSes in given string to Adobe-Japan1. Same as IVS.unify('AJ', string).
 
 **Parameters**
 
-**string**: string, Unify IVSes in given string to Adobe-Japan1. Same as IVS.unify('AJ', string).
+**string**: string
 
 
 HD(string)
@@ -51,7 +51,7 @@ Unify IVSes in given string to Hanyo-Denshi. Same as IVS.unify('HD', string).
 
 **Parameters**
 
-**string**: string, Unify IVSes in given string to Hanyo-Denshi. Same as IVS.unify('HD', string).
+**string**: string
 
 
 strip(string)
@@ -60,7 +60,7 @@ Completely strip IVSes from given string.
 
 **Parameters**
 
-**string**: string, Completely strip IVSes from given string.
+**string**: string
 
 **Returns**: string, - IVS-stripped string
 
@@ -70,7 +70,7 @@ Append IVSes for non-IVSed kanjies in given string using default glyphs in Glyph
 
 **Parameters**
 
-**string**: string, Append IVSes for non-IVSed kanjies in given string using default glyphs in GlyphWiki.
+**string**: string
 
 **options**: object, The options object
 
