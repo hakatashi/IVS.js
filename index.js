@@ -6,6 +6,39 @@ var KANJI_SURROGATE_REGEX = new RegExp('[\uD840-\uD86E][\uDC00-\uDFFF]');
 
 var IVS = {};
 
+// http://youmightnotneedjquery.com/#deep_extend
+var deepExtend = function(out) {
+	out = out || {};
+
+	for (var i = 1; i < arguments.length; i++) {
+		var obj = arguments[i];
+
+		if (!obj)
+			continue;
+
+		for (var key in obj) {
+			if (obj.hasOwnProperty(key)) {
+				if (typeof obj[key] === 'object')
+					deepExtend(out[key], obj[key]);
+				else
+					out[key] = obj[key];
+			}
+		}
+	}
+
+	return out;
+};
+
+var map = function (value, mapObject) {
+	for (var key in mapObject) {
+		if (mapObject.hasOwnProperty(key) && value === key) {
+			return mapObject[key];
+		}
+	}
+
+	return null;
+};
+
 var parseKanji = function (string) {
 	if (string.length <= 2) {
 		return {
@@ -121,10 +154,75 @@ IVS.HD = IVS.unify.bind(undefined, 'HD');
 /**
  * Completely strip IVSes from given string.
  * @param  {string} string
- * @return {string} IVS-stripped string
+ * @return {string} - IVS-stripped string
  */
 IVS.strip = function (string) {
 	return string.replace(new RegExp('\uDB40[\uDD00-\uDDEF]', 'g'), '');
+};
+
+/**
+ * Append IVSes for non-IVSed kanjies in given string using default glyphs in GlyphWiki.
+ * @param {string} string
+ * @param {object} options - The options object
+ * @param {string} options.category - The IVS category used to append IVS which is the one of `'AJ'`, `'HD'`, `'AJonly'`, `'HDonly'`. Default is `'AJ'`.
+ * @param {boolean} options.force - This option forces to append U+E0100 if default glyph was not found in IVD. This doesn't affect kanjies which is not documented in IVD. Default is `true`.
+ * @return {string} - IVSed string
+ */
+IVS.append = function (string, options) {
+	var defaults = {
+		category: 'AJ',
+		force: true
+	};
+
+	if (typeof options === 'object') {
+		options = deepExtend(defaults, options);
+	} else {
+		options = defaults;
+	}
+
+	var priorities = map(options.category, {
+		AJ: ['AJ', 'HD'],
+		HD: ['HD', 'AJ'],
+		AJonly: ['AJ'],
+		HDonly: ['HD'],
+	});
+
+	return IVS.forEachKanji(string, function (kanji, ivs, index) {
+		if (ivs) return kanji + ivs;
+		if (IVD.IVD[kanji] === undefined) return kanji;
+
+		if (IVD.IVD[kanji].std === '') {
+			if (options.force) {
+				return kanji + '\uDB40\uDD00';
+			} else {
+				return kanji;
+			}
+		} else {
+			var aliasName = IVD.IVD[kanji].std;
+			var IVSed = null;
+
+			priorities.forEach(function (category) {
+				if (IVSed) return;
+
+				IVD.aliases[aliasName].forEach(function (alias) {
+					if (IVSed) return;
+
+					var parsed = parseKanji(alias);
+					if (parsed.kanji === kanji && parsed.ivs) {
+						if (IVD.IVD[parsed.kanji][parsed.ivs][0] === category) {
+							IVSed = kanji + parsed.ivs;
+						}
+					}
+				});
+			});
+
+			if (IVSed) {
+				return IVSed;
+			} else {
+				return kanji;
+			}
+		}
+	});
 };
 
 module.exports = IVS;
