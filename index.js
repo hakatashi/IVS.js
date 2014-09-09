@@ -143,13 +143,17 @@ IVS.unify = function (category, string) {
  * Unify IVSes in given string to Adobe-Japan1. Same as IVS.unify('AJ', string).
  * @param {string} string
  */
-IVS.AJ = IVS.unify.bind(undefined, 'AJ');
+IVS.AJ = function (string) {
+	return IVS.unify('AJ', string);
+};
 
 /**
  * Unify IVSes in given string to Hanyo-Denshi. Same as IVS.unify('HD', string).
  * @param {string} string
  */
-IVS.HD = IVS.unify.bind(undefined, 'HD');
+IVS.HD = function (string) {
+	return IVS.unify('HD', string);
+};
 
 /**
  * Completely strip IVSes from given string.
