@@ -29,4 +29,11 @@ describe('IVS.unify()', function () {
 			IVS.HD(datum.AJ).should.equal(datum.HD);
 		});
 	});
+
+	data.surrogate.forEach(function (datum) {
+		it('should correctly treat IVSes which uses kanjies from surrogate pairs', function () {
+			IVS.AJ(datum.HD).should.equal(datum.AJ);
+			IVS.HD(datum.AJ).should.equal(datum.HD);
+		});
+	});
 });
