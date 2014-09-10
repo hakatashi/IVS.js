@@ -26,6 +26,6 @@ describe('IVS.strip()', function () {
 			IVS.strip(datum.IVSed, {
 				resolve: false
 			}).should.equal(datum.noResolve);
-		})
-	})
+		});
+	});
 });
