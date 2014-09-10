@@ -1,6 +1,6 @@
 {
   "name": "ivs",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "This module supplies basic mutual IVS conversion between Adobe-Japan and Hanyo-denshi(Moji_Joho)",
   "engines": {
     "node": "v0.10.31"
