@@ -38,4 +38,18 @@ describe('IVS.append()', function () {
 			}).should.equal(datum.noForce);
 		});
 	});
+
+	data.resolve.forEach(function (datum) {
+		if('should correctly resolve IVSes mapped to other code points', function () {
+			IVS.append(datum.noIVS).should.equal(datum.noResolve);
+
+			IVS.append(datum.noIVS, {
+				resolve: true
+			}).should.equal(datum.resolve);
+
+			IVS.append(datum.noIVS, {
+				resolve: false
+			}).should.equal(datum.noResolve);
+		});
+	});
 });
