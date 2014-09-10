@@ -258,7 +258,7 @@ IVS.append = function (string, options) {
 					var parsed = parseKanji(alias);
 					if ((options.resolve || parsed.kanji === kanji) && parsed.ivs) {
 						if (IVD.IVD[parsed.kanji][parsed.ivs][0] === category) {
-							IVSed = kanji + parsed.ivs;
+							IVSed = parsed.kanji + parsed.ivs;
 						}
 					}
 				});
