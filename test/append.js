@@ -26,7 +26,7 @@ describe('IVS.append()', function () {
 	});
 
 	data.force.forEach(function (datum) {
-		if('should force appending if options.force is set true', function () {
+		it('should force appending if options.force is set true', function () {
 			IVS.append(datum.noIVS).should.equal(datum.force);
 
 			IVS.append(datum.noIVS, {
@@ -34,13 +34,13 @@ describe('IVS.append()', function () {
 			}).should.equal(datum.force);
 
 			IVS.append(datum.noIVS, {
-				force: tfalse
+				force: false
 			}).should.equal(datum.noForce);
 		});
 	});
 
 	data.resolve.forEach(function (datum) {
-		if('should correctly resolve IVSes mapped to other code points', function () {
+		it('should correctly resolve IVSes mapped to other code points', function () {
 			IVS.append(datum.noIVS).should.equal(datum.noResolve);
 
 			IVS.append(datum.noIVS, {
