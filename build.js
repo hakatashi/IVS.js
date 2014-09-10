@@ -171,6 +171,15 @@ async.parallel([
 				var parseLine = byline.createStream();
 				parseLine.on('error', done);
 
+				var kanjiSpans = [
+					{from: 0x3400, to: 0x4DBF}, // CJK Extension A
+					{from: 0x4E00, to: 0x9FFF}, // CJK
+					{from: 0xF900, to: 0xFAFF}, // CJK Compatibility
+					{from: 0x20000, to: 0x2A6DF}, // CJK Extension B
+					{from: 0x2A700, to: 0x2B73F}, // CJK Extension C
+					{from: 0x2B740, to: 0x2B81F}, // CJK Extension D
+				];
+
 				parseLine.on('data', function (line) {
 					var columns = line.toString().split('|');
 
@@ -181,6 +190,20 @@ async.parallel([
 					columns = columns.map(function (column) {
 						return column.trim();
 					});
+
+					// register kanji to IVD
+					if (columns[0].match(new RegExp('^u[0-9a-f]{4,5}$'))) {
+						var codePoint = parseInt(columns[0].slice(1), 16);
+
+						if (kanjiSpans.some(function (span) {
+							return span.from <= codePoint && codePoint <= span.to;
+						})) {
+							var kanji = fromCodePoint(codePoint);
+							if (IVD[kanji] === undefined) {
+								IVD[kanji] = {};
+							}
+						}
+					}
 
 					var aliasMatch = columns[2].match(new RegExp('^99:0:0:0:0:200:200:([^:]+)$'));
 					if (aliasMatch) {
@@ -354,6 +377,14 @@ async.parallel([
 					IVD[firstCode][secondCode][1] = minAliasName;
 				}
 			}
+		}
+	}
+
+	// remove unlinked kanjies from IVD
+
+	for (var firstCode in IVD) if (IVD.hasOwnProperty(firstCode)) {
+		if (Object.keys(IVD[firstCode]).length === 1 && IVD[firstCode].std === '') {
+			delete IVD[firstCode];
 		}
 	}
 

@@ -158,9 +158,51 @@ IVS.HD = function (string) {
 /**
  * Completely strip IVSes from given string.
  * @param  {string} string
+ * @param {object} options - The options object
+ * @param {boolean} options.resolve - Some of the default glyphs in GlyphWiki is linked to IVDes of other code points. This option resolves mapping to other code points as conversion. Default is `false`.
  * @return {string} - IVS-stripped string
  */
-IVS.strip = function (string) {
+IVS.strip = function (string, options) {
+	var defaults = {
+		resolve: false,
+	};
+
+	if (typeof options === 'object') {
+		options = deepExtend(defaults, options);
+	} else {
+		options = defaults;
+	}
+
+	if (options.resolve) {
+		string = IVS.forEachKanji(string, function (kanji, ivs) {
+			if (!ivs) return kanji;
+			if (IVD.IVD[kanji] === undefined) return kanji;
+			if (IVD.IVD[kanji][ivs] === undefined) return kanji;
+
+			if (IVD.IVD[kanji][ivs] !== '') {
+				var aliasName = IVD.IVD[kanji][ivs];
+				var resolved = null;
+
+				IVD.aliases[aliasName].forEach(function (alias) {
+					var parsed = parseKanji(alias);
+					if (!parsed.ivs) {
+						if (!resolved || parsed.kanji === kanji) {
+							resolved = parsed.kanji;
+						}
+					}
+				});
+
+				if (resolved) {
+					return resolved;
+				} else {
+					return kanji;
+				}
+			} else {
+				return kanji;
+			}
+		});
+	}
+
 	return string.replace(new RegExp('\uDB40[\uDD00-\uDDEF]', 'g'), '');
 };
 
@@ -170,12 +212,14 @@ IVS.strip = function (string) {
  * @param {object} options - The options object
  * @param {string} options.category - The IVS category used to append IVS which is the one of `'AJ'`, `'HD'`, `'AJonly'`, `'HDonly'`. Default is `'AJ'`.
  * @param {boolean} options.force - This option forces to append U+E0100 if default glyph was not found in IVD. This doesn't affect kanjies which is not documented in IVD. Default is `true`.
+ * @param {boolean} options.resolve - Some of the default glyphs in GlyphWiki is linked to IVDes of other code points. This option resolves mapping to other code points as conversion. Default is `false`.
  * @return {string} - IVSed string
  */
 IVS.append = function (string, options) {
 	var defaults = {
 		category: 'AJ',
-		force: true
+		force: true,
+		resolve: false,
 	};
 
 	if (typeof options === 'object') {
@@ -196,7 +240,7 @@ IVS.append = function (string, options) {
 		if (IVD.IVD[kanji] === undefined) return kanji;
 
 		if (IVD.IVD[kanji].std === '') {
-			if (options.force) {
+			if (options.force && IVD.IVD[kanji]['\uDB40\uDD00'] !== undefined) {
 				return kanji + '\uDB40\uDD00';
 			} else {
 				return kanji;
@@ -212,7 +256,7 @@ IVS.append = function (string, options) {
 					if (IVSed) return;
 
 					var parsed = parseKanji(alias);
-					if (parsed.kanji === kanji && parsed.ivs) {
+					if ((options.resolve || parsed.kanji === kanji) && parsed.ivs) {
 						if (IVD.IVD[parsed.kanji][parsed.ivs][0] === category) {
 							IVSed = kanji + parsed.ivs;
 						}
