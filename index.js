@@ -104,7 +104,7 @@ IVS.forEachKanji = function (string, callback) {
 /**
  * Unify IVSes in the given string to the given type
  * @param  {string} category - The IVS category to which the IVSes will be unified to. `'Aj'` and `'HD'` are supported.
- * @param  {string} string
+ * @param  {string} string -
  * @return {string} IVS-Unified string
  */
 IVS.unify = function (category, string) {
@@ -141,7 +141,7 @@ IVS.unify = function (category, string) {
 
 /**
  * Unify IVSes in given string to Adobe-Japan1. Same as IVS.unify('AJ', string).
- * @param {string} string
+ * @param {string} string -
  */
 IVS.AJ = function (string) {
 	return IVS.unify('AJ', string);
@@ -149,7 +149,7 @@ IVS.AJ = function (string) {
 
 /**
  * Unify IVSes in given string to Hanyo-Denshi. Same as IVS.unify('HD', string).
- * @param {string} string
+ * @param {string} string -
  */
 IVS.HD = function (string) {
 	return IVS.unify('HD', string);
@@ -157,7 +157,7 @@ IVS.HD = function (string) {
 
 /**
  * Completely strip IVSes from given string.
- * @param  {string} string
+ * @param  {string} string -
  * @param {object} options - The options object
  * @param {boolean} options.resolve - Some of the default glyphs in GlyphWiki is linked to IVDes of other code points. This option resolves mapping to other code points as conversion. Default is `false`.
  * @return {string} - IVS-stripped string
@@ -208,7 +208,7 @@ IVS.strip = function (string, options) {
 
 /**
  * Append IVSes for non-IVSed kanjies in given string using default glyphs in GlyphWiki.
- * @param {string} string
+ * @param {string} string -
  * @param {object} options - The options object
  * @param {string} options.category - The IVS category used to append IVS which is the one of `'AJ'`, `'HD'`, `'AJonly'`, `'HDonly'`. Default is `'AJ'`.
  * @param {boolean} options.force - This option forces to append U+E0100 if default glyph was not found in IVD. This doesn't affect kanjies which is not documented in IVD. Default is `true`.
