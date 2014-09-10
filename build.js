@@ -46,6 +46,8 @@ var base64 = function (n) {
 	var ret = '';
 	var charset = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@_'
 
+	if (n === 0) return charset[0];
+
 	while (n !== 0) {
 		ret = charset[n % 64] + ret;
 		n = Math.floor(n / 64);

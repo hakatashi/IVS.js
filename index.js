@@ -179,7 +179,7 @@ IVS.strip = function (string, options) {
 			if (IVD.IVD[kanji] === undefined) return kanji;
 			if (IVD.IVD[kanji][ivs] === undefined) return kanji;
 
-			if (IVD.IVD[kanji][ivs] !== '') {
+			if (IVD.IVD[kanji][ivs][1] !== '') {
 				var aliasName = IVD.IVD[kanji][ivs][1];
 				var resolved = null;
 
