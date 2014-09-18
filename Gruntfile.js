@@ -6,11 +6,11 @@ module.exports = function (grunt) {
 				ignore: ['zlib']
 			},
 			dev: {
-				src: 'index.js',
+				src: 'browser.js',
 				dest: 'dev/ivs.js'
 			},
 			dist: {
-				src: 'index.js',
+				src: 'browser.js',
 				dest: 'dist/ivs.js'
 			},
 		},
