@@ -3,6 +3,9 @@ IVS.js
 
 Node.js module that supplies mutual IVS conversion between Adobe-Japan and Hanyo-denshi(Moji_Joho).
 
+This package includes database for mutual conversion of IVS,
+which is generated from [GlyphWiki](http://glyphwiki.org/)'s aliasing information.
+
 ## Install
 
     npm install ivs
@@ -10,8 +13,18 @@ Node.js module that supplies mutual IVS conversion between Adobe-Japan and Hanyo
 ## Use
 
     var IVS = require('ivs');
+    var ivs = new IVS(function () {
+        ivs.HD('葛󠄁飾󠄀区󠄀'); // -> '葛󠄃飾󠄂区󠄀'
+    });
 
 ## Usage
+
+new IVS(callback)
+-----------------------------
+
+Constructor.
+
+**callback**: Function(error), called when IVS converter is ready.
 
 forEachKanji(string, callback)
 -----------------------------
