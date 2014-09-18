@@ -1,10 +1,21 @@
-var IVD = require('./data/ivd.json');
+var http = require('http');
+var https = require('https');
+var zlib = require('zlib');
+var fs = require('fs');
+
+if (typeof __dirname === 'undefined') {
+	if (document) {
+		var scripts = document.getElementsByTagName('script');
+		var scriptPath = scripts[scripts.length - 1].src.split('?')[0];
+		var __dirname = scriptPath.split('/').slice(0, -1).join('/');
+	} else {
+		throw new Error('Cannot get current directory');
+	}
+}
 
 var IVS_REGEX = new RegExp('\uDB40[\uDD00-\uDDEF]');
 var KANJI_REGEX = new RegExp('[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]');
 var KANJI_SURROGATE_REGEX = new RegExp('[\uD840-\uD86E][\uDC00-\uDFFF]');
-
-var IVS = {};
 
 // http://youmightnotneedjquery.com/#deep_extend
 var deepExtend = function(out) {
@@ -53,12 +64,66 @@ var parseKanji = function (string) {
 	}
 }
 
+function IVS(callback) {
+	if (typeof callback !== 'function') {
+		callback = function () {};
+	}
+
+	this.initialize(callback);
+}
+
+IVS.prototype.initialize = function (callback) {
+	var ivs = this;
+
+	if (ivs.IVD === undefined) {
+		var dataJSON = '';
+
+		function onJSONReady() {
+			try {
+				IVS.prototype.IVD = JSON.parse(dataJSON);
+			} catch (error) {
+				return callback(new Error('ivd.json data is broken'));
+			}
+
+			callback.call(ivs, null);
+		}
+
+		if (typeof location !== 'undefined') { // in browser
+			var get = location.protocol === 'https:' ? https.get : http.get;
+
+			var request = get(__dirname + '/ivd.json.gz', function (response) {
+				if (response.statusCode !== 200) {
+					callback(new Error('Request to ivd.json.gzip responded with status code ' + response.statusCode));
+				}
+
+				response.on('error', callback);
+				response.on('data', function (chunk) { dataJSON += chunk; });
+				response.on('close', onJSONReady);
+			});
+		} else { // in node
+			var gunzip = zlib.createGunzip();
+
+			gunzip.on('data', function (chunk) { dataJSON += chunk; });
+			gunzip.on('error', callback);
+			gunzip.on('finish', onJSONReady);
+
+			var read = fs.createReadStream(__dirname + '/data/ivd.json.gz');
+			read.on('error', callback);
+			read.pipe(gunzip);
+		}
+	} else {
+		setTimeout(function () {
+			callback.call(ivs, null);
+		}, 0);
+	}
+};
+
 /**
  * Execute function for each Kanji and IVS (if exists) in given string
  * @param {string} string - The string in which this function seeks for Kanji
  * @param {KanjiCallback} callback - The function called every time when Kanji was found
  */
-IVS.forEachKanji = function (string, callback) {
+IVS.prototype.forEachKanji = function (string, callback) {
 	var size = string.length;
 	var ret = '';
 
@@ -107,7 +172,10 @@ IVS.forEachKanji = function (string, callback) {
  * @param  {string} string -
  * @return {string} IVS-Unified string
  */
-IVS.unify = function (category, string) {
+IVS.prototype.unify = function (category, string) {
+	var IVS = this;
+	var IVD = this.IVD;
+
 	return IVS.forEachKanji(string, function (kanji, ivs, index) {
 		if (!ivs) return kanji;
 		if (!IVD.IVD[kanji]) return kanji + ivs;
@@ -143,16 +211,16 @@ IVS.unify = function (category, string) {
  * Unify IVSes in given string to Adobe-Japan1. Same as IVS.unify('AJ', string).
  * @param {string} string -
  */
-IVS.AJ = function (string) {
-	return IVS.unify('AJ', string);
+IVS.prototype.AJ = function (string) {
+	return this.unify('AJ', string);
 };
 
 /**
  * Unify IVSes in given string to Hanyo-Denshi. Same as IVS.unify('HD', string).
  * @param {string} string -
  */
-IVS.HD = function (string) {
-	return IVS.unify('HD', string);
+IVS.prototype.HD = function (string) {
+	return this.unify('HD', string);
 };
 
 /**
@@ -162,7 +230,10 @@ IVS.HD = function (string) {
  * @param {boolean} options.resolve - Some of the default glyphs in GlyphWiki is linked to IVDes of other code points. This option resolves mapping to other code points as conversion. Default is `false`.
  * @return {string} - IVS-stripped string
  */
-IVS.strip = function (string, options) {
+IVS.prototype.strip = function (string, options) {
+	var IVS = this;
+	var IVD = this.IVD;
+
 	var defaults = {
 		resolve: false,
 	};
@@ -215,7 +286,9 @@ IVS.strip = function (string, options) {
  * @param {boolean} options.resolve - Some of the default glyphs in GlyphWiki is linked to IVDes of other code points. This option resolves mapping to other code points as conversion. Default is `false`.
  * @return {string} - IVSed string
  */
-IVS.append = function (string, options) {
+IVS.prototype.append = function (string, options) {
+	var IVS = this;
+
 	var defaults = {
 		category: 'AJ',
 		force: true,
@@ -237,27 +310,27 @@ IVS.append = function (string, options) {
 
 	return IVS.forEachKanji(string, function (kanji, ivs, index) {
 		if (ivs) return kanji + ivs;
-		if (IVD.IVD[kanji] === undefined) return kanji;
+		if (IVS.IVD.IVD[kanji] === undefined) return kanji;
 
-		if (IVD.IVD[kanji].std === '') {
-			if (options.force && IVD.IVD[kanji]['\uDB40\uDD00'] !== undefined) {
+		if (IVS.IVD.IVD[kanji].std === '') {
+			if (options.force && IVS.IVD.IVD[kanji]['\uDB40\uDD00'] !== undefined) {
 				return kanji + '\uDB40\uDD00';
 			} else {
 				return kanji;
 			}
 		} else {
-			var aliasName = IVD.IVD[kanji].std;
+			var aliasName = IVS.IVD.IVD[kanji].std;
 			var IVSed = null;
 
 			priorities.forEach(function (category) {
 				if (IVSed) return;
 
-				IVD.aliases[aliasName].forEach(function (alias) {
+				IVS.IVD.aliases[aliasName].forEach(function (alias) {
 					if (IVSed) return;
 
 					var parsed = parseKanji(alias);
 					if ((options.resolve || parsed.kanji === kanji) && parsed.ivs) {
-						if (IVD.IVD[parsed.kanji][parsed.ivs][0] === category) {
+						if (IVS.IVD.IVD[parsed.kanji][parsed.ivs][0] === category) {
 							IVSed = parsed.kanji + parsed.ivs;
 						}
 					}
