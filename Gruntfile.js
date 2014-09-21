@@ -14,15 +14,6 @@ module.exports = function (grunt) {
 				dest: 'dist/ivs.js'
 			},
 		},
-		compress: {
-			data: {
-				options: {
-					mode: 'gzip'
-				},
-				src: ['data/ivd.json'],
-				dest: 'data/ivd.json.gz'
-			}
-		},
 		mochaTest: {
 			options: {
 				reporter: 'nyan'
@@ -41,25 +32,24 @@ module.exports = function (grunt) {
 		},
 		copy: {
 			dev: {
-				src: 'data/ivd.json.gz',
-				dest: 'dev/ivd.json.gz'
+				src: 'data/ivd.json',
+				dest: 'dev/ivd.json'
 			},
 			dist: {
-				src: 'data/ivd.json.gz',
-				dest: 'dist/ivd.json.gz'
+				src: 'data/ivd.json',
+				dest: 'dist/ivd.json'
 			}
 		}
 	});
 
 	grunt.loadNpmTasks('grunt-browserify');
 	grunt.loadNpmTasks('grunt-mocha-test');
-	grunt.loadNpmTasks('grunt-contrib-compress');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 
 	grunt.registerTask('default', ['dev']);
 
-	grunt.registerTask('data', ['compress:data']);
+	grunt.registerTask('data', []);
 	grunt.registerTask('dev', ['data', 'browserify:dev', 'copy:dev', 'uglify:dev']);
 	grunt.registerTask('dist', ['data', 'browserify:dist', 'copy:dist', 'uglify:dist']);
 	grunt.registerTask('test', ['data', 'mochaTest']);

@@ -19,7 +19,7 @@ which is generated from [GlyphWiki](http://glyphwiki.org/)'s aliasing informatio
 
 ## Usage
 
-new IVS(callback)
+new IVS([options], [callback])
 -----------------------------
 
 Constructor.

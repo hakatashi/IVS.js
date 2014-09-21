@@ -1,6 +1,6 @@
 var http = require('http');
 var https = require('https');
-var zlib = require('zlib');
+var url = require('url');
 var fs = require('fs');
 
 if (typeof __dirname === 'undefined') {
@@ -64,15 +64,26 @@ var parseKanji = function (string) {
 	}
 }
 
-function IVS(callback) {
-	if (typeof callback !== 'function') {
-		callback = function () {};
+function IVS() {
+	var options, callback;
+
+	for (var i = 0; i < arguments.length; i++) {
+		var argument = arguments[i];
+
+		if (typeof argument === 'function') {
+			callback = argument;
+		} else if (typeof argument === 'object') {
+			options = argument;
+		}
 	}
 
-	this.initialize(callback);
+	options = options || {};
+	callback = callback || function () {};
+
+	this.initialize(options, callback);
 }
 
-IVS.prototype.initialize = function (callback) {
+IVS.prototype.initialize = function (options, callback) {
 	var ivs = this;
 
 	if (ivs.IVD === undefined) {
@@ -82,7 +93,7 @@ IVS.prototype.initialize = function (callback) {
 			try {
 				IVS.prototype.IVD = JSON.parse(dataJSON);
 			} catch (error) {
-				return callback(new Error('ivd.json data is broken'));
+				return callback(new Error('ivd.json is broken'));
 			}
 
 			callback.call(ivs, null);
@@ -90,10 +101,11 @@ IVS.prototype.initialize = function (callback) {
 
 		if (typeof location !== 'undefined') { // in browser
 			var get = location.protocol === 'https:' ? https.get : http.get;
+			var dataURL = options.ivd ? url.resolve(location.href, options.ivd) : (__dirname + '/ivd.json')
 
-			var request = get(__dirname + '/ivd.json.gz', function (response) {
+			var request = get(dataURL, function (response) {
 				if (response.statusCode !== 200) {
-					callback(new Error('Request to ivd.json.gzip responded with status code ' + response.statusCode));
+					callback(new Error('Request to ' + dataURL + ' responded with status code ' + response.statusCode));
 				}
 
 				response.on('error', callback);
@@ -101,15 +113,11 @@ IVS.prototype.initialize = function (callback) {
 				response.on('close', onJSONReady);
 			});
 		} else { // in node
-			var gunzip = zlib.createGunzip();
-
-			gunzip.on('data', function (chunk) { dataJSON += chunk; });
-			gunzip.on('error', callback);
-			gunzip.on('finish', onJSONReady);
-
-			var read = fs.createReadStream(__dirname + '/data/ivd.json.gz');
-			read.on('error', callback);
-			read.pipe(gunzip);
+			fs.readFile(__dirname + '/data/ivd.json', function (error, data) {
+				if (error) return callback(error);
+				dataJSON = data;
+				onJSONReady();
+			});
 		}
 	} else {
 		setTimeout(function () {
