@@ -81,6 +81,6 @@ Execute function for each Kanji and IVS (if exists) in given string
 
 * `string`: String, in which this function seeks for Kanji
 * `callback`: Function(kanji, ivs, index), called every time when Kanji was found
-- `kanji`: String, the IVS-stripped version of found kanji.
-- `ivs`: String, stacking IVS of found kanji. If no IVS is stacking, zero-length string is supplied.
-- `index`: Number, index of found kanji in given string.
+  - `kanji`: String, the IVS-stripped version of found kanji.
+  - `ivs`: String, stacking IVS of found kanji. If no IVS is stacking, zero-length string is supplied.
+  - `index`: Number, index of found kanji in given string.
