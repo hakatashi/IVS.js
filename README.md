@@ -26,7 +26,8 @@ var ivs = new IVS(function () {
 Constructor.
 
 * `options`: Object, options.
-  - `options.ivd`: String, the path to `ivd.json` file.
+  - `options.ivd`: String, the path to `ivd.json` file. Valid only in browser.
+    Default is the same directory to the ivs.js file.
 * `callback`: Function(error), called when IVS converter is ready.
   - `error`: Error, supplied if construction failed.
 
