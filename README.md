@@ -35,7 +35,7 @@ Constructor.
 
 Unify IVSes in the given string to the given type
 
-* `category`: String, The IVS category to which the IVSes will be unified to. `'Aj'` and `'HD'` are supported.
+* `category`: String, The IVS category to which the IVSes will be unified to. `'AJ'` and `'HD'` are supported.
 * `string`: String, to convert.
 * Returns: String, IVS-Unified string
 
