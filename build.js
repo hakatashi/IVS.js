@@ -405,7 +405,6 @@ module.exports = function (done) {
 			}
 
 			console.log('Compiled file created.');
-			process.exit(0);
 			done();
 		});
 	});
