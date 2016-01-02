@@ -1,6 +1,8 @@
 IVS.js
 ======
 
+[![Build Status](https://travis-ci.org/hakatashi/IVS.js.svg?branch=master)](https://travis-ci.org/hakatashi/IVS.js)
+
 Node.js module that supplies mutual IVS conversion between Adobe-Japan and Hanyo-denshi(Moji_Joho).
 
 This package includes database for mutual conversion of IVS,
