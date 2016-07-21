@@ -31,7 +31,7 @@
   "homepage": "https://github.com/hakatashi/IVS.js",
   "devDependencies": {
     "async": "^2.0.0",
-    "byline": "^4.1.1",
+    "byline": "^5.0.0",
     "grunt": "^1.0.0",
     "grunt-browserify": "^5.0.0",
     "grunt-contrib-clean": "^0.7.0",
