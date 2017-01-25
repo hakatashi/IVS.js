@@ -1,6 +1,8 @@
 IVS.js
 ======
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/hakatashi/IVS.js.svg)](https://greenkeeper.io/)
+
 [![Build Status](https://travis-ci.org/hakatashi/IVS.js.svg?branch=master)](https://travis-ci.org/hakatashi/IVS.js)
 
 Node.js module that supplies mutual IVS conversion between Adobe-Japan and Hanyo-denshi(Moji_Joho).
