@@ -147,7 +147,7 @@ module.exports = function (done) {
 							console.log('Dump file gzip inflation finished.');
 						});
 
-						var extract = tar.Parse();
+						var extract = new tar.Parse();
 						extract.on('error', done);
 						extract.on('entry', function (entry) {
 							if (entry.props.path === 'dump_newest_only.txt') {
