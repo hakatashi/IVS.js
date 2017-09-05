@@ -150,7 +150,7 @@ module.exports = function (done) {
 						var extract = new tar.Parse();
 						extract.on('error', done);
 						extract.on('entry', function (entry) {
-							if (entry.props.path === 'dump_newest_only.txt') {
+							if (entry.path === 'dump_newest_only.txt') {
 								var write = fs.createWriteStream(SOURCES_DIR + '/dump_newest_only.txt');
 								write.on('error', done);
 								write.on('finish', function () {
