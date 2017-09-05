@@ -8,7 +8,7 @@ var request = require('request');
 var byline = require('byline');
 
 var DUMP_URL = 'http://glyphwiki.org/dump.tar.gz';
-var IVD_URL = 'http://www.unicode.org/ivd/data/2014-05-16/IVD_Sequences.txt';
+var IVD_URL = 'http://www.unicode.org/ivd/data/2016-08-15/IVD_Sequences.txt';
 
 var SOURCES_DIR = './sources';
 var DATA_DIR = './data';
